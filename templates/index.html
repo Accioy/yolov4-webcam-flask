@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+  <head>
+    <title>Video Streaming Demonstration</title>
+  </head>
+  <body>
+    <h1>Video Streaming Demonstration</h1>
+    <p>{{ loginfo }}</p>
+    <img src="{{ url_for('video_feed') }}">
+
+    <script language="JavaScript">
+      function myrefresh(){
+        window.location.reload();
+      }
+      setTimeout('myrefresh()',10000); //指定10秒刷新一次
+    </script>
+  </body>
+</html>
