@@ -2,7 +2,7 @@
 
 python3 modules:
 tensorflow==2.3.0
-opencv-python==4.1.1.26
+opencv-python
 matplotlib
 flask
 redis
