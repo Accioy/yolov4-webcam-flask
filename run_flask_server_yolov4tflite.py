@@ -2,9 +2,7 @@
 
 # Plot without display
 # must put before using any display backend
-import matplotlib as mpl
-mpl.use('Agg')
-import matplotlib.pyplot as plt
+
 
 import cv2
 
@@ -130,24 +128,10 @@ def object_detection():
                 #print(results)
                 cv2.imwrite('demo.jpg',image)
                 # image = image_lists
-                fig = plt.figure()
-                plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-                my_stringIObytes = BytesIO()
-
-                # save fig without white margin
-                plt.axis('off')
-
-                height, width, channels = image.shape
-                fig.set_size_inches(width / fig.dpi, height / fig.dpi)
-                plt.gca().xaxis.set_major_locator(plt.NullLocator())
-                plt.gca().yaxis.set_major_locator(plt.NullLocator())
-                plt.subplots_adjust(top=1, bottom=0, left=0, right=1, hspace=0, wspace=0)
-                plt.margins(0, 0)
-                plt.savefig(my_stringIObytes, dpi=fig.dpi)
-
+                flag, encodedImage = cv2.imencode(".jpg", image)
+                
+                my_stringIObytes = BytesIO(encodedImage)
                 my_stringIObytes.seek(0)
-                plt.close(fig)
-
                 with lock:
                     outputFrame = my_stringIObytes.read()
 

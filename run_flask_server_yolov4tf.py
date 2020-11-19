@@ -2,9 +2,7 @@
 
 # Plot without display
 # must put before using any display backend
-import matplotlib as mpl
-mpl.use('Agg')
-import matplotlib.pyplot as plt
+
 
 import cv2
 
@@ -23,8 +21,8 @@ import threading
 from flask import Flask, render_template, Response
 from utils import *
 from tensorflow.python.saved_model import tag_constants
-FRAME_INTERVAL = int(os.getenv("FRAME_INTERVAL", 1))  # second
-RES_URL = os.getenv('RES_URL', "http://192.168.12.150:8090/stream.mjpg")
+FRAME_INTERVAL = int(os.getenv("FRAME_INTERVAL", 0))  # second
+RES_URL = os.getenv('RES_URL', "http://127.0.0.1:8080/video_feed")
 ORION_TASK_ID = os.getenv('ORION_TASK_ID', "obj_0001")
 OBJECT_OUTPUT_PORT = os.getenv('OBJECT_OUTPUT_PORT', "8080")
 
@@ -63,7 +61,7 @@ def get_frame():
             loginfo = 'error, %s. \r\n\r\n Try again in %s seconds.' % (e, str(wait_time))
             print(loginfo)
             loginfo = ORION_TASK_ID + ' @@ ' + loginfo
-            send_result.delay(loginfo)
+            #send_result.delay(loginfo)
             time.sleep(wait_time)
             pass
 
@@ -118,30 +116,18 @@ def object_detection(model):
                 cv2.imwrite('demo.jpg',image)
                 # image = image_lists
                 # print(results)
-                fig = plt.figure()
-                plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-                my_stringIObytes = BytesIO()
-
-                # save fig without white margin
-                plt.axis('off')
-
-                height, width, channels = image.shape
-                fig.set_size_inches(width / fig.dpi, height / fig.dpi)
-                plt.gca().xaxis.set_major_locator(plt.NullLocator())
-                plt.gca().yaxis.set_major_locator(plt.NullLocator())
-                plt.subplots_adjust(top=1, bottom=0, left=0, right=1, hspace=0, wspace=0)
-                plt.margins(0, 0)
-                plt.savefig(my_stringIObytes, dpi=fig.dpi)
-
+                flag, encodedImage = cv2.imencode(".jpg", image)
+                
+                my_stringIObytes = BytesIO(encodedImage)
                 my_stringIObytes.seek(0)
-                plt.close(fig)
+                
 
                 with lock:
                     outputFrame = my_stringIObytes.read()
 
                 r = ORION_TASK_ID + ' @@ ' + str(results)
                 print(r)
-                send_result.delay(r)
+                #send_result.delay(r)
                 time.sleep(FRAME_INTERVAL)
                 image_lists = []
 
@@ -149,7 +135,7 @@ def object_detection(model):
             loginfo = 'error, %s. \r\n\r\n Try again in %s seconds.' % (e, str(wait_time))
             print(loginfo)
             loginfo = ORION_TASK_ID + ' @@ ' + loginfo
-            send_result.delay(loginfo)
+            #send_result.delay(loginfo)
             time.sleep(wait_time)
             pass
 
@@ -204,4 +190,4 @@ if __name__ == "__main__":
     t = threading.Thread(target=object_detection,args = (infer,))
     t.daemon = True
     t.start()
-    app.run(host='0.0.0.0', threaded=True, debug=True, port="8080", use_reloader=False)
+    app.run(host='0.0.0.0', threaded=True, debug=True, port="8090", use_reloader=False)
