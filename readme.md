@@ -26,6 +26,12 @@ python run_flask_server_yolov4tflite.py
 
 The model path is defined in line 53 ``interpreter,inputs,output_details = load_model_lite('model/yolov4-416-fp16.tflite')``.
 
+# local camera test for tf model and tflite model:
+```python
+python infer_tf.py
+python infertflite_chg0.py
+```
+
 
 
 

@@ -17,7 +17,7 @@ def load_model_lite(path):
 
 
 
-interpreter,inputs,output_details = load_model_lite('model/yolov4-416-chg0.tflite')
+interpreter,inputs,output_details = load_model_lite('model/yolov4-tiny-416-chg0.tflite')
 print('input_details:',inputs)
 print('output_details:',output_details)
 print(len(output_details))
